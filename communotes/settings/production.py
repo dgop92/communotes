@@ -1,7 +1,9 @@
 from datetime import timedelta
 import dj_database_url
 from .base import *
-from decouple import Csv
+from decouple import config, Csv
+
+SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = False
 
