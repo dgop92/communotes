@@ -1,10 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
-from formulas import views
-from formulas.models import PhotoContext
-from formulas.data_factories import PhotoContextFactory
+
 from core.tests.mixins import TestCreateMixin, TestRetrieveMixin
 from core.tests.test_utils import CrudTestBase
+from formulas import views
+from formulas.data_factories import PhotoContextFactory
+from formulas.models import PhotoContext
 
 
 class PhotoContextTest(CrudTestBase, TestCreateMixin, TestRetrieveMixin):

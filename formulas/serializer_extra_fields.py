@@ -7,12 +7,12 @@ import uuid
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.translation import gettext_lazy as _
-from rest_framework.fields import (
-    ImageField
-)
+from rest_framework.fields import ImageField
 from rest_framework.relations import SlugRelatedField
 
 """ copy from https://github.com/Hipo/drf-extra-fields/blob/master/drf_extra_fields/fields.py """
+
+
 class Base64FieldMixin(object):
     EMPTY_VALUES = (None, "", [], (), {})
 
@@ -29,7 +29,9 @@ class Base64FieldMixin(object):
         raise NotImplementedError
 
     def __init__(self, *args, **kwargs):
-        self.trust_provided_content_type = kwargs.pop("trust_provided_content_type", False)
+        self.trust_provided_content_type = kwargs.pop(
+            "trust_provided_content_type", False
+        )
         self.represent_in_base64 = kwargs.pop("represent_in_base64", False)
         super(Base64FieldMixin, self).__init__(*args, **kwargs)
 
@@ -66,12 +68,18 @@ class Base64FieldMixin(object):
             data = SimpleUploadedFile(
                 name=complete_file_name,
                 content=decoded_file,
-                content_type=file_mime_type
+                content_type=file_mime_type,
             )
 
             return super(Base64FieldMixin, self).to_internal_value(data)
 
-        raise ValidationError(_("Invalid type. This is not an base64 string: {}".format(type(base64_data))))
+        raise ValidationError(
+            _(
+                "Invalid type. This is not an base64 string: {}".format(
+                    type(base64_data)
+                )
+            )
+        )
 
     def get_file_extension(self, filename, decoded_file):
         raise NotImplementedError
@@ -96,18 +104,17 @@ class Base64FieldMixin(object):
         else:
             return super(Base64FieldMixin, self).to_representation(file)
 
+
 """ copy from https://github.com/Hipo/drf-extra-fields/blob/master/drf_extra_fields/fields.py """
+
+
 class Base64ImageField(Base64FieldMixin, ImageField):
     """
     A django-rest-framework field for handling image-uploads through raw post data.
     It uses base64 for en-/decoding the contents of the file.
     """
-    ALLOWED_TYPES = (
-        "jpeg",
-        "jpg",
-        "png",
-        "gif"
-    )
+
+    ALLOWED_TYPES = ("jpeg", "jpg", "png", "gif")
     INVALID_FILE_MESSAGE = _("Please upload a valid image.")
     INVALID_TYPE_MESSAGE = _("The type of the image couldn't be determined.")
 
@@ -131,7 +138,10 @@ class Base64ImageField(Base64FieldMixin, ImageField):
         extension = "jpg" if extension == "jpeg" else extension
         return extension
 
+
 """ copy from https://github.com/Hipo/drf-extra-fields/blob/master/drf_extra_fields/fields.py """
+
+
 class HybridImageField(Base64ImageField):
     """
     A django-rest-framework field for handling image-uploads through
@@ -151,8 +161,7 @@ class HybridImageField(Base64ImageField):
 
 
 class SlugGetOrCreateRelatedField(SlugRelatedField):
-
-    def __init__(self, slug_field=None, internal_validators = None , **kwargs):
+    def __init__(self, slug_field=None, internal_validators=None, **kwargs):
         if not internal_validators:
             self.internal_validators = []
         else:
@@ -163,7 +172,6 @@ class SlugGetOrCreateRelatedField(SlugRelatedField):
         try:
             for internal_validator in self.internal_validators:
                 internal_validator(data)
-            return self.get_queryset() \
-                .get_or_create(**{self.slug_field: data})[0]
+            return self.get_queryset().get_or_create(**{self.slug_field: data})[0]
         except (TypeError, ValueError):
-            self.fail('invalid')
+            self.fail("invalid")

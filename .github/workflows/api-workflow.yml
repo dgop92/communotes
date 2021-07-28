@@ -53,5 +53,3 @@ jobs:
       run: pytest -v --ds=communotes.settings.ci
       env:
         SYSTEM_ENV: GITHUB_WORKFLOW
-      
-      

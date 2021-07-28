@@ -1,18 +1,18 @@
 from django.urls import reverse
 from rest_framework import status
+
+from core.tests.mixins import TestListViewMixin, TestRetrieveMixin
+from core.tests.test_utils import CrudTestBase
 from formulas import views
-from formulas.models import PhotoClassification
 from formulas.data_factories import (
     PhotoClassificationFactory,
     SubjectFactory,
     generate_dict_factory,
 )
-from core.tests.mixins import TestListViewMixin, TestRetrieveMixin
-from core.tests.test_utils import CrudTestBase
+from formulas.models import PhotoClassification
 
 
-class PhotoClassificationTest(CrudTestBase, 
-    TestListViewMixin, TestRetrieveMixin):
+class PhotoClassificationTest(CrudTestBase, TestListViewMixin, TestRetrieveMixin):
 
     use_normal_token = True
     model = PhotoClassification
@@ -60,22 +60,23 @@ class PhotoClassificationTest(CrudTestBase,
         self.assertEqual(self.json_response["pk"], photo_classification.pk)
 
     def test_subject_filter(self):
-        s1 = SubjectFactory.create(name='physics')
-        s2 = SubjectFactory.create(name='calculus')
+        s1 = SubjectFactory.create(name="physics")
+        s2 = SubjectFactory.create(name="calculus")
         pcl1 = PhotoClassificationFactory.create(subject=s1)
         PhotoClassificationFactory.create(subject=s2)
-        query = {'subject': 'physics'}
+        query = {"subject": "physics"}
         self.shortcut_get(query=query, status_code=status.HTTP_200_OK)
-        self.assertEqual(pcl1.pk, self.json_response['results'][0]['pk'])
-        self.assertEqual(1, self.json_response['count'])
+        self.assertEqual(pcl1.pk, self.json_response["results"][0]["pk"])
+        self.assertEqual(1, self.json_response["count"])
 
     def test_exam_number_order(self):
         pcl1 = PhotoClassificationFactory.create(exam_number=2)
         pcl2 = PhotoClassificationFactory.create(exam_number=1)
         pk_list = [pcl2.pk, pcl1.pk]
-        query = {'ordering': 'exam_number'}
+        query = {"ordering": "exam_number"}
         self.shortcut_get(query=query, status_code=status.HTTP_200_OK)
-        results_pk_list = [item['pk'] for item in self.json_response['results']]
+        results_pk_list = [item["pk"] for item in self.json_response["results"]]
         self.assertListEqual(pk_list, results_pk_list)
-                
+
+
 PhotoClassificationTest.__test__ = True
