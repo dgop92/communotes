@@ -42,7 +42,7 @@ class TestApiBase:
         is_json = False
         if "content-type" in self.response._headers:
             content_types = self.response._headers["content-type"]
-            is_json = content_types.find("json") != -1
+            is_json = "application/json" in content_types
 
         if is_json and self.response.content:
             self.json_response = self.response.json()
