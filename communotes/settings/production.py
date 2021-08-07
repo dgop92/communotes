@@ -23,10 +23,13 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
 }
 
-DJOSER[
-    "PASSWORD_RESET_CONFIRM_URL"
-] = "http://127.0.0.1:8000/password/reset/confirm/{uid}/{token}"
-DJOSER["ACTIVATION_URL"] = ("http://127.0.0.1:8000/activate/{uid}/{token}",)
+# so far there is a production link
+DJOSER.update(
+    {
+        "PASSWORD_RESET_CONFIRM_URL": "http://127.0.0.1:8000/password/reset/confirm/{uid}/{token}",
+        "ACTIVATION_URL": "http://127.0.0.1:8000/activate/{uid}/{token}",
+    }
+)
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
