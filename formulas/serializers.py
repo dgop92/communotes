@@ -3,6 +3,7 @@ import re
 from django.core.validators import slug_re
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from rest_framework.fields import ImageField
 
 from formulas.models import (
     Photo,
@@ -13,10 +14,7 @@ from formulas.models import (
     Subject,
     Tag,
 )
-from formulas.serializer_extra_fields import (
-    HybridImageField,
-    SlugGetOrCreateRelatedField,
-)
+from formulas.serializer_extra_fields import SlugGetOrCreateRelatedField
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -98,7 +96,7 @@ class PhotoSerializer(serializers.ModelSerializer):
     tags = SlugGetOrCreateRelatedField(
         many=True, slug_field="name", queryset=Tag.objects.all(), required=False
     )
-    file = HybridImageField(allow_null=True, required=False)
+    file = ImageField(allow_null=True, required=False)
     photo_classification = PhotoClassificationSerializer()
     photo_context = PhotoContextSerializer(required=False)
 
