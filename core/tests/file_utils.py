@@ -15,7 +15,12 @@ def create_inmemory_file(file_name="tmp.txt", content=b"", content_type=None):
 
 
 def create_inmemory_image(
-    file_name="tmp.png", format=None, width=200, height=200, content_type=None
+    file_name="tmp.png",
+    format=None,
+    width=200,
+    height=200,
+    content_type=None,
+    image_mode="RGBA",
 ):
     from PIL import Image
 
@@ -27,7 +32,7 @@ def create_inmemory_image(
     stream = BytesIO()
     size = (width, height)
     color = (255, 0, 0, 0)
-    image = Image.new("RGBA", size, color)
+    image = Image.new(image_mode, size, color)
     image.save(stream, format=format)
     image_file = InMemoryUploadedFile(
         stream, None, file_name, content_type, stream.tell(), None

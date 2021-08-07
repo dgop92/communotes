@@ -109,6 +109,24 @@ class PhotoTest(CrudTestBase, TestListViewMixin, TestDetailViewMixin):
             default_storage.exists(user_photos_directory_path(photo, filename))
         )
 
+    @override_settings(DEFAULT_FILE_STORAGE="inmemorystorage.InMemoryStorage")
+    def test_upload_big_photo(self):
+        photo = PhotoFactory.create(file=None, user=self.get_owner_user())
+        filename = "my_photo.jpeg"
+        created_file = file_utils.create_inmemory_image(
+            filename, width=20000, height=18000, format="jpeg", image_mode="RGB"
+        )
+        self.shortcut_patch(
+            photo.pk,
+            multipart=True,
+            data={"file": created_file},
+            token=self.get_owner_user_dict()["token"],
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+        self.assertFalse(
+            default_storage.exists(user_photos_directory_path(photo, filename))
+        )
+
     def test_cannot_modify_other_users_photo(self):
         user1 = self.normal_users[0]["user"]
         user2_token = self.normal_users[1]["token"]

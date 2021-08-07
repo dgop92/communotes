@@ -100,6 +100,17 @@ class PhotoSerializer(serializers.ModelSerializer):
     photo_classification = PhotoClassificationSerializer()
     photo_context = PhotoContextSerializer(required=False)
 
+    def validate_file(self, file):
+        MAX_FILE_SIZE = 5000000
+        # file is not required, so it may be empty
+        if file and file.size > MAX_FILE_SIZE:
+            raise serializers.ValidationError(
+                _(
+                    "The size of the image is too big, upload an image of size less than 5M"
+                )
+            )
+        return file
+
     def create(self, validated_data):
 
         # there is no need to validate the serializers
