@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 
-from formulas import views
+from formulas import query_views, views
 
 urlpatterns = [
     path("photos/", views.PhotoList.as_view(), name=views.PhotoList.name),
@@ -45,5 +45,15 @@ urlpatterns = [
     path("tags/", views.TagList.as_view(), name=views.TagList.name),
     re_path(
         r"^tags/(?P<pk>[0-9]+)$", views.TagDetail.as_view(), name=views.TagDetail.name
+    ),
+    re_path(
+        r"^search/(?P<subject>[-a-zA-Z0-9_]+)$",
+        query_views.SearchFormulaView.as_view(),
+        name=query_views.SearchFormulaView.name,
+    ),
+    re_path(
+        r"^search/(?P<subject>[-a-zA-Z0-9_]+)/(?P<exam_number>[1-6])$",
+        query_views.SearchFormulaView.as_view(),
+        name=query_views.SearchFormulaView.name,
     ),
 ]
