@@ -1,3 +1,5 @@
+from django.contrib.postgres.search import SearchQuery, SearchVectorField
+from django.db.models.expressions import RawSQL
 from drf_spectacular.utils import extend_schema_view
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -16,10 +18,8 @@ class SearchFormulaView(generics.ListAPIView):
         IsAuthenticated,
     ]
 
-    search_fields = (
-        "$name",
-        "$description",
-    )
+    # no filter backends
+    filter_backends = []
 
     def get_queryset(self):
 
@@ -30,4 +30,16 @@ class SearchFormulaView(generics.ListAPIView):
         if "exam_number" in self.kwargs:
             filter_kwargs[exam_number_key] = self.kwargs.get("exam_number")
 
-        return Photo.objects.filter(**filter_kwargs)
+        query_set = Photo.objects.filter(**filter_kwargs)
+        # search filter
+        search_term = self.request.query_params.get("search")
+        if search_term:
+            sentences = search_term.split()
+            sentences = map(lambda w: f"'{w}'", sentences)
+            search_query = " & ".join(sentences)
+
+            query_set = query_set.annotate(
+                ts=RawSQL("search_vector", params=[], output_field=SearchVectorField())
+            ).filter(ts=SearchQuery(search_query, search_type="raw", config="english"))
+
+        return query_set

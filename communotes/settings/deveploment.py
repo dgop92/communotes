@@ -10,8 +10,12 @@ SECRET_KEY = config("SECRET_KEY")
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("POSTGRES_DEV_NAME"),
+        "USER": config("POSTGRES_DEV_USER"),
+        "PASSWORD": config("POSTGRES_DEV_PASSWORD"),
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
     }
 }
 
