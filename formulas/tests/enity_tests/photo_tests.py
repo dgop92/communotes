@@ -228,8 +228,12 @@ class PhotoTest(CrudTestBase, TestListViewMixin, TestDetailViewMixin):
     def test_search(self):
         photo1 = PhotoFactory.create(file=None, user=self.get_owner_user())
         photo1.name = "my custom name"
+        photo1.description = "empty"
         photo1.save()
+        # be awere of randomness, the name 'custom' may appear
+        # in the description of the second photo, we use empty to avoid issues
         photo2 = PhotoFactory.create(file=None, user=self.get_owner_user())
+        photo1.name = "empty"
         photo2.description = "A special description"
         photo2.save()
         query1 = {"search": "my custom"}

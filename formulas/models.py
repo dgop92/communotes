@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Sum
 from django.utils.translation import gettext_lazy as _
 
 from core.models import TimestampedModel
@@ -62,6 +63,16 @@ def user_photos_directory_path(instance, filename):
     return "user_{0}/photos/{1}".format(instance.user.id, filename)
 
 
+class PhotoManager(models.Manager):
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .annotate(total_reviews=Sum("reviews__stars"))
+            .order_by("-total_reviews", *TimestampedModel.Meta.ordering)
+        )
+
+
 class Photo(TimestampedModel):
     file = models.ImageField(upload_to=user_photos_directory_path, null=True)
     name = models.CharField(max_length=120)
@@ -80,6 +91,8 @@ class Photo(TimestampedModel):
         related_name="photos",
     )
     tags = models.ManyToManyField(Tag, related_name="photos")
+
+    objects = PhotoManager()
 
 
 class Review(models.Model):
